@@ -520,13 +520,13 @@ proc open_port {comport} {
 	global port_speed
 	global status
 	
-	set prefix "\\\\.\\"
+	set prefix ""
 	set serial_port [append prefix $comport]
 
 	if { [catch {open $serial_port  {r+}} serial] } {
 	# невозможно открыть порт
 		put_to_log "[clock format [clock seconds] -format %T] -- Error: cannot open $comport. Program terminated."
-		close $logfile
+		#close $logfile
 		after 2000
 		exit
 	} else {
