@@ -19,15 +19,6 @@ package provide app-caller_manager 1.0
 #
 #	Для создания старпака
 #
-set dirname [file dirname [info script]]
-set tmpdir  [file join $::env(TEMP) __monitoring__]
-file mkdir $tmpdir
-foreach dll {libmySQL.dll} {
-    if { ![file exists [file join $tmpdir $dll]] } {
-        file copy -force [file join $dirname bin $dll] $tmpdir
-    }
-}
-set ::env(PATH) "$tmpdir;$env(PATH)"
 
 package require mysqltcl
 #package require tclodbc
