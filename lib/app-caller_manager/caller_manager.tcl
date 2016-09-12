@@ -70,7 +70,7 @@ proc on_status_changed {name1 name2 op} {
 	global timeshift
 	
 	set waiting_time 0
-	put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> Статус: $status"
+	put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> Status: $status"
 	switch $status {
         "Получение списка номеров из базы"  {
                                                 if {[llength $postList] == 0} {
@@ -80,7 +80,7 @@ proc on_status_changed {name1 name2 op} {
                                                     set db_password {frost}																	
                                                 
                                                     if [catch {mysqlconnect -host $db_host -port $db_port -user $db_user -password $db_password -db monitoringdata -encoding utf-8} mysql_handler] {
-                                                        put_to_log "[clock format [clock seconds] -format %T] -- Не могу соединиться с базой данных"
+                                                        put_to_log "[clock format [clock seconds] -format %T] -- Can not connect to database"
                                                         break
                                                     } else {
                                                         mysqlexec $mysql_handler {SET NAMES 'utf8'}
@@ -391,7 +391,7 @@ proc check_etap_completed {} {
         if {$status == "Звонок"} {
             if {[regexp ".*NO .*\r\n" $data]} {                
                 after cancel err_timer
-                put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> Нет связи: $status <> Ответ: [string trim $data]"
+                put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> No connection: $status <> Answer: [string trim $data]"
                 set data ""
                 set status "Звонок на резервный"
             }
@@ -399,7 +399,7 @@ proc check_etap_completed {} {
         if {$status == "Звонок на резервный"} {
             if {[regexp ".*NO .*\r\n" $data]} {                
                 after cancel err_timer
-                put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> Нет связи: $status <> Ответ: [string trim $data]"
+                put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> No connection: $status <> Answer: [string trim $data]"
                 set data ""
                 set status "Положить трубку"
             }
@@ -465,7 +465,7 @@ proc parse_000 {message} {
     set db_password {frost}																	
 
     if [catch {mysqlconnect -host $db_host -port $db_port -user $db_user -password $db_password -db monitoringdata -encoding utf-8} mysql_handler] {
-        put_to_log "[clock format [clock seconds] -format %T] -- Не могу соединиться с базой данных"
+        put_to_log "[clock format [clock seconds] -format %T] -- Can not connect to database"
         break
     } else {
         mysqlexec $mysql_handler {SET NAMES 'utf8'}
@@ -474,7 +474,7 @@ proc parse_000 {message} {
                                                                             
         set sql "UPDATE post_parameters SET lastCallingTime = NOW() WHERE phoneNumber = $phoneToCall"
         if {[catch {mysqlexec $mysql_handler $sql} tmpError]} {
-					put_to_log "[clock format [clock seconds] -format %T] -- Ошибка $tmpError\nЗапрос: $sql"
+					put_to_log "[clock format [clock seconds] -format %T] -- Error $tmpError\nQuery: $sql"
         }
         
         set sql "INSERT INTO monitoringtable (dateOfMeasurement, phoneNumber, nWind, vWind, tHumid, vlagn, uPit, uBat, uZar, T_DS18S20, t_IPTV, v_IPTV, F0, F1, F2, F3, F4, F5, F6, F7, F8, F9, T0, T1, T2, T3, T4) VALUES (NOW(), "
@@ -506,7 +506,7 @@ proc parse_000 {message} {
         append sql $T4 ") "
         
         if {[catch {mysqlexec $mysql_handler $sql} tmpError]} {
-			put_to_log "[clock format [clock seconds] -format %T] -- Ошибка $tmpError\nЗапрос: $sql"
+			put_to_log "[clock format [clock seconds] -format %T] -- Error $tmpError\nQuery: $sql"
         }
         
         mysqlclose $mysql_handler	                                                                                                            
@@ -782,7 +782,7 @@ proc put_to_db {db_name param_list} {
 			set db_password {frost}																	
 		
 			if [catch {mysqlconnect -host $db_host -port $db_port -user $db_user -password $db_password -db monitoringdata -encoding utf-8} mysql_handler] {
-				put_to_log "[clock format [clock seconds] -format %T] -- Не могу соединиться с базой данных"
+				put_to_log "[clock format [clock seconds] -format %T] -- Can not connect to database"
 				break
 			} else {
 				mysqlexec $mysql_handler {SET NAMES 'utf8'}
@@ -793,7 +793,7 @@ proc put_to_db {db_name param_list} {
 				
 				put_to_log "[clock format [clock seconds] -format %T] -- $sql"
 				if {[catch {mysqlexec $mysql_handler $sql} tmpError]} {
-					put_to_log "[clock format [clock seconds] -format %T] -- Ошибка $tmpError\nЗапрос: $sql"
+					put_to_log "[clock format [clock seconds] -format %T] -- Error $tmpError\nQuery: $sql"
 				}
 				mysqlclose $mysql_handler
 			}
@@ -812,7 +812,7 @@ proc put_to_db {db_name param_list} {
 			append connectString \; DBQ=[file nativename $fileName]
 			append connectString \; {FIL=MS Access}			
 			if [catch {database db $connectString} tmp_error] {
-				put_to_log "[clock format [expr [clock seconds] - 3600] -format %T] -- Не могу соединиться с базой данных: $tmp_error\n"
+				put_to_log "[clock format [expr [clock seconds] - 3600] -format %T] -- Can not connect to database: $tmp_error\n"
 				break
 			}
 
@@ -1074,7 +1074,7 @@ global callEnabled
 global writeEnabled
 
 global timeshift
-set timeshift 3600
+set timeshift 0
 
 set postList {}
 set callEnabled 1
