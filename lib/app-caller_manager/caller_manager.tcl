@@ -85,8 +85,8 @@ proc on_status_changed {name1 name2 op} {
                                                 if {[llength $postList] == 0} {
                                                     set db_port {3306}
                                                     set db_host {127.0.0.1}
-                                                    set db_user {root}
-                                                    set db_password {carpediem}																	
+                                                    set db_user {frost}
+                                                    set db_password {frost}																	
                                                 
                                                     if [catch {mysqlconnect -host $db_host -port $db_port -user $db_user -password $db_password -db monitoringdata -encoding utf-8} mysql_handler] {
                                                         put_to_log "[clock format [clock seconds] -format %T] -- Ќе могу соединитьс€ с базой данных"
@@ -470,8 +470,8 @@ proc parse_000 {message} {
     
     set db_port {3306}
     set db_host {127.0.0.1}
-    set db_user {root}
-    set db_password {carpediem}																	
+    set db_user {frost}
+    set db_password {frost}																	
 
     if [catch {mysqlconnect -host $db_host -port $db_port -user $db_user -password $db_password -db monitoringdata -encoding utf-8} mysql_handler] {
         put_to_log "[clock format [clock seconds] -format %T] -- Ќе могу соединитьс€ с базой данных"
@@ -787,8 +787,8 @@ proc put_to_db {db_name param_list} {
 	# сохранение в базе MySQL					
 			set db_port {3306}
 			set db_host {127.0.0.1}
-			set db_user {root}
-			set db_password {carpediem}																	
+			set db_user {frost}
+			set db_password {frost}																	
 		
 			if [catch {mysqlconnect -host $db_host -port $db_port -user $db_user -password $db_password -db monitoringdata -encoding utf-8} mysql_handler] {
 				put_to_log "[clock format [clock seconds] -format %T] -- Ќе могу соединитьс€ с базой данных"
