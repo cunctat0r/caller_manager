@@ -72,7 +72,7 @@ proc on_status_changed {name1 name2 op} {
 	set waiting_time 0
 	put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> Status: $status"
 	switch $status {
-        "Получение списка номеров из базы"  {
+        "Get numbers from database"  {
                                                 if {[llength $postList] == 0} {
                                                     set db_port {3306}
                                                     set db_host {127.0.0.1}
@@ -123,21 +123,21 @@ proc on_status_changed {name1 name2 op} {
                                                 set waiting_time 15
 												after [expr $waiting_time * 1000] err_timer
                                             }
-		"Проверка связи"					{
+		"Modem test"					{
 												set cmd "AT\r"												
 												puts -nonewline $serial $cmd
 												flush $serial
 												set waiting_time 5
 												after [expr $waiting_time * 1000] err_timer
 											}
-		"Настройка модема"					{																				
+		"Disable echo"					{																				
 												set cmd "ATE0\r"
 												puts -nonewline $serial $cmd
 												flush $serial
 												set waiting_time 1							
 												after [expr $waiting_time * 1000] err_timer												
 											}		
-		"Установка класса"					{																				
+		"Set class"					{																				
 												set cmd "AT+FCLASS=0\r"
                                                 #set cmd "AT\r"
 												puts -nonewline $serial $cmd
@@ -145,7 +145,7 @@ proc on_status_changed {name1 name2 op} {
 												set waiting_time 1										
 												after [expr $waiting_time * 1000] err_timer
 											}		
-		"Установка DATA-режима"				{
+		"Set DATA mode"				{
 												set cmd "AT+CSNS=0\r"
                                                 #set cmd "AT\r"
 												puts -nonewline $serial $cmd
@@ -153,7 +153,7 @@ proc on_status_changed {name1 name2 op} {
 												set waiting_time 1
 												after [expr $waiting_time * 1000] err_timer
 											}
-		"Установка расширенных параметров"	{
+		"Set extended parameters"	{
 												set cmd "AT+CRC=1;+CLIP=1\r"
                                                 #set cmd "AT\r"
 												puts -nonewline $serial $cmd
@@ -161,7 +161,7 @@ proc on_status_changed {name1 name2 op} {
 												set waiting_time 1
 												after [expr $waiting_time * 1000] err_timer
 											}									
-		"Звонок"						    {
+		"Call"						    {
 												#set cmd "ATD+79372417364\r"
                                                 set cmd "ATD${phoneToCall}\r"
 												puts -nonewline $serial $cmd
@@ -169,7 +169,7 @@ proc on_status_changed {name1 name2 op} {
 												set waiting_time 60
 												after [expr $waiting_time * 1000] err_timer
 											}
-        "Звонок на резервный"			    {
+        "Call to reserve"			    {
 												#set cmd "ATD+79372417364\r"
                                                 set cmd "ATD${reservePhoneToCall}\r"
 												puts -nonewline $serial $cmd
@@ -177,28 +177,28 @@ proc on_status_changed {name1 name2 op} {
 												set waiting_time 60
 												after [expr $waiting_time * 1000] err_timer
 											}                                            
-		"Запрос данных 1" 					{
+		"Data query 1" 					{
 												set cmd ":010300000019E3\r\n"
 												puts -nonewline $serial $cmd
 												flush $serial
                                                 set waiting_time 60
 												after [expr $waiting_time * 1000] err_timer
 											}                                            
-        "Запрос данных 2" 					{
+        "Data query 2" 					{
 												set cmd ":01031000002EBE\r\n"
 												puts -nonewline $serial $cmd
 												flush $serial
                                                 set waiting_time 60
 												after [expr $waiting_time * 1000] err_timer
 											}                                                                                        
-        "Запрос данных 3" 					{
+        "Data query 3" 					{
 												set cmd ":010320000003D9\r\n"
 												puts -nonewline $serial $cmd
 												flush $serial
                                                 set waiting_time 60
 												after [expr $waiting_time * 1000] err_timer
 											}
-        "Установка параметров поста"        {        
+        "Set post parameters"        {        
                                                 #set cmd ":010320000003D9\r\n"
                                                 set cmd [::modbusascii::write_registers_cmd 1 23 [list [expr 60 * $time_priem_zvonka] [expr 60 * $period_zvonka]]]
 												puts -nonewline $serial $cmd
@@ -206,21 +206,21 @@ proc on_status_changed {name1 name2 op} {
                                                 set waiting_time 60
 												after [expr $waiting_time * 1000] err_timer
                                             }
-        "Режим команд"                      {
+        "Command mode"                      {
                                                 set cmd "+++"
 												puts -nonewline $serial $cmd
 												flush $serial
 												set waiting_time 10
 												after [expr $waiting_time * 1000] err_timer        
                                             }
-		"Положить трубку"					{
+		"Hang up"					{
 												set cmd "ATH0\r\n"
 												puts -nonewline $serial $cmd
 												flush $serial
 												set waiting_time 1
 												after [expr $waiting_time * 1000] err_timer
 											}
-		"Сброс модема"						{
+		"Reset modem"						{
 												set cmd "ATZ\r"
 												puts -nonewline $serial $cmd
 												flush $serial
@@ -230,28 +230,11 @@ proc on_status_changed {name1 name2 op} {
 	}						
 	#($status != "Получить данные") ||
 	
-	if {$status != "Ожидание"} {
-	#	
-		if {$status != "Получить данные"} {
-		#	
-			#puts stdout "Status is $status\n"
-			
-		}
-	}
-	
-	if {$status != "Ожидание"} {
-		
-	}
-	
-	if {$status == "Снять трубку"} {
-		#after [expr 30 * 1000] err_timer
-	}
-	
-	if {$status == "Сброс модема"} {
+	if {$status == "Reset modem"} {
 		#after [expr $waiting_time * 1000] err_timer
 	}
 	
-	if {$status == "Проверка связи"} {
+	if {$status == "Modem test"} {
 		#after [expr $waiting_time * 1000] err_timer
 	}
 	
@@ -265,19 +248,19 @@ proc on_status_changed {name1 name2 op} {
 	global status
 	
 	switch $status {
-    "Запрос данных 1" -
-    "Запрос данных 2" -
-    "Запрос данных 3"   {
-                        set status "Режим команд"
+    "Data query 1" -
+    "Data query 2" -
+    "Data query 3"   {
+                        set status "Command mode"
                         }
-    "Звонок"            {
-                        set status "Звонок на резервный"
+    "Call"            {
+                        set status "Call to reserve"
                         } 
-    "Получение списка номеров из базы" {
-                                        set status  "Настройка модема"
+    "Get numbers from database" {
+                                        set status  "Disable echo"
                                         } 
     default             {
-                        set status "Проверка связи"
+                        set status "Modem test"
                         }
     }
     
@@ -291,92 +274,92 @@ proc check_etap_completed {} {
     global writeEnabled
 	
 	switch $status {
-        "Проверка связи"					{
+        "Modem test"					{
 												set response "OK\r\n"
-												set next_status "Получение списка номеров из базы"
+												set next_status "Get numbers from database"
 											}
-        "Получение списка номеров из базы"  {
+        "Get numbers from database"  {
                                                 set data ""
                                                 after cancel err_timer
                                                 #put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> Выполнено: $status"
-                                                set status "Настройка модема"
+                                                set status "Disable echo"
                                                 return
                                             }		
-		"Настройка модема"					{																				
+		"Disable echo"					{																				
 												set response "OK\r\n"
-												set next_status "Установка класса"
+												set next_status "Set class"
 											}		
-		"Установка класса"					{																				
+		"Set class"					{																				
 												set response "OK\r\n"
-												set next_status "Установка DATA-режима"
+												set next_status "Set DATA mode"
 											}		
-		"Установка DATA-режима"				{
+		"Set DATA mode"				{
 												set response "OK\r\n"
-												set next_status "Установка расширенных параметров"
+												set next_status "Set extended parameters"
 											}
-		"Установка расширенных параметров"	{
+		"Set extended parameters"	{
 												set response "OK\r\n"
                                                 
                                                 if {$callEnabled == 0} {
-                                                    set next_status "Получение списка номеров из базы"                                                    
+                                                    set next_status "Get numbers from database"                                                    
                                                 } else {
-                                                    set next_status "Звонок"
+                                                    set next_status "Call"
                                                 }
 											}
-		"Звонок"    						{
+		"Call"    						{
 												set response ".*CONNECT.*\r\n"
-												set next_status "Запрос данных 1"
+												set next_status "Data query 1"
 											}
-        "Звонок на резервный"				{
+        "Call to reserve"				{
 												set response ".*CONNECT.*\r\n"
-												set next_status "Запрос данных 1"
+												set next_status "Data query 1"
 											}                                            
-		"Запрос данных 1" 					{
+		"Data query 1" 					{
 												set response "\r\n"
-												set next_status "Запрос данных 2"
+												set next_status "Data query 2"
 											}
-        "Запрос данных 2" 					{
+        "Data query 2" 					{
 												set response "\r\n"
-												set next_status "Запрос данных 3"
+												set next_status "Data query 3"
 											}
-        "Запрос данных 3" 					{
+        "Data query 3" 					{
 												set response "\r\n"
                                                 if {$writeEnabled == 1} {
-                                                    set next_status "Установка параметров поста"
+                                                    set next_status "Set post parameters"
                                                 } else {
-                                                    set next_status "Режим команд"
+                                                    set next_status "Command mode"
                                                 }
 											} 
-        "Установка параметров поста"        {
+        "Set post parameters"        {
                                                 set response "\r\n"
-                                                set next_status "Режим команд"
+                                                set next_status "Command mode"
                                             }
-        "Режим команд"                      {
+        "Command mode"                      {
                                                 set response "OK\r\n"
-												set next_status "Положить трубку"
+												set next_status "Hang up"
                                             }
-		"Положить трубку"					{
+		"Hang up"					{
 												set response "OK\r\n"
-												set next_status "Сброс модема"
+												set next_status "Reset modem"
 											}
-		"Сброс модема"						{
+		"Reset modem"						{
 												set response "OK\r\n"
-												set next_status "Получение списка номеров из базы"
+												set next_status "Get numbers from database"
 											}
 	}		
 	
 	if {[regexp $response $data]} {			
-		if {$status == "Запрос данных 3"} {
+		if {$status == "Data query 3"} {
 			after cancel err_timer
 			put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> $data"
 			#parse_and_save $data
 		}
-        if {$status == "Запрос данных 2"} {
+        if {$status == "Data query 2"} {
 			after cancel err_timer
 			put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> $data"
 			parse_000 $data
 		}
-        if {$status == "Запрос данных 1"} {
+        if {$status == "Data query 1"} {
 			after cancel err_timer
 			put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> $data"
 			#parse_000 $data
@@ -388,20 +371,20 @@ proc check_etap_completed {} {
 		
 		set status $next_status
 	} else {
-        if {$status == "Звонок"} {
+        if {$status == "Call"} {
             if {[regexp ".*NO .*\r\n" $data]} {                
                 after cancel err_timer
                 put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> No connection: $status <> Answer: [string trim $data]"
                 set data ""
-                set status "Звонок на резервный"
+                set status "Call to reserve"
             }
         }
-        if {$status == "Звонок на резервный"} {
+        if {$status == "Call to reserve"} {
             if {[regexp ".*NO .*\r\n" $data]} {                
                 after cancel err_timer
                 put_to_log "[clock format [clock seconds] -format %T] -- $port_id -> No connection: $status <> Answer: [string trim $data]"
                 set data ""
-                set status "Положить трубку"
+                set status "Hang up"
             }
         }
     }
@@ -1081,6 +1064,6 @@ set callEnabled 1
 set writeEnabled 0
 
 trace variable status w on_status_changed
-set status "Проверка связи"
+set status "Modem test"
 #set status "Получение списка номеров из базы"
 vwait forever
